@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eric's Station V5.2</title>
+    <title>Eric's Station V5.3</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -142,7 +142,7 @@
 
     <div id="dashboard" class="section active">
         <div class="dash-header-card">
-            <div class="header-title"><h2>🛡️ KET 备考指挥官 V5.2</h2><p>我只管努力--辰诺 | Target: Grade A</p></div>
+            <div class="header-title"><h2>🛡️ KET 备考指挥官 V5.3</h2><p>我只管努力--辰诺 | Target: Grade A</p></div>
             <div class="stats-box" onclick="adminScore()" title="点击管理积分">
                 <div class="stat-item"><div class="num" id="displayTotalScore">0</div><div class="label">总积分 ⚙️</div></div>
             </div>
@@ -532,12 +532,13 @@
     function renderGame() {
         const b = document.getElementById('gameBoard');
         if(!currentData.vocab) { b.innerHTML="No Vocab"; return; }
-        let v = currentData.vocab; let s = currentData.sentences||[];
+        let s = currentData.sentences||[];
         
         if(gameState.mode === 'flashcard') {
-            let w = v[gameState.idx];
+            let vLen = currentData.vocab.length;
+            let w = currentData.vocab[gameState.idx];
             b.innerHTML = `<div class="flashcard-scene" onclick="this.querySelector('.flashcard').classList.toggle('flipped');speak('${w.en}')"><div class="flashcard"><div class="fc-face fc-front">${w.en}<div class="pron">${w.pron||''}</div></div><div class="fc-face fc-back">${w.cn}</div></div></div>
-            <div style="display:flex;gap:10px;"><button class="game-btn" onclick="gameState.idx=(gameState.idx-1+v.length)%v.length;renderGame()">⬅️ Prev</button><button class="game-btn" onclick="gameState.idx=(gameState.idx+1)%v.length;renderGame()">Next ➡️</button></div>`;
+            <div style="display:flex;gap:10px;"><button class="game-btn" onclick="gameState.idx=(gameState.idx-1+${vLen})%${vLen};renderGame()">⬅️ Prev</button><button class="game-btn" onclick="gameState.idx=(gameState.idx+1)%${vLen};renderGame()">Next ➡️</button></div>`;
         }
         else if(gameState.mode === 'match') {
             if(!gameState.match.init || gameState.lastDay!==currentDay) {
@@ -564,7 +565,7 @@
             b.innerHTML = html + '</div><button onclick="setGameMode(\'match\', document.querySelector(\'.game-btn.active\'))" style="margin-top:20px;">Restart</button>';
         }
         else if(gameState.mode === 'spell') {
-            let w = v[gameState.idx];
+            let w = currentData.vocab[gameState.idx];
             b.innerHTML = `<div class="game-stats"><span class="stat-pill ok">✅ ${gameState.spell.correct}</span><span class="stat-pill err">❌ ${gameState.spell.wrong}</span></div><h2>${w.cn}</h2><input id="spi" class="spell-input" autocomplete="off"><br><button class="game-btn" style="margin-top:20px" onclick="checkSpell('${w.en}')">Check</button>`;
         }
         else if(gameState.mode === 'sentence') {
