@@ -3,71 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eric's Station</title>
+    <title>Eric's Station Pro</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        /* === 核心样式 === */
-        :root { --primary: #4834d4; --secondary: #686de0; --bg: #f5f6fa; --text: #2c3e50; --white: #ffffff; --sidebar-width: 220px; --success: #6ab04c; --danger: #eb4d4b; }
-        body { font-family: "Segoe UI", sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { 
+            --primary: #5a4fcf; --bg: #f0f2f5; --white: #ffffff; --text: #333;
+            --sidebar-width: 220px; --success: #00b894; --warn: #fdcb6e; --danger: #ff7675;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* 侧边栏 */
-        .sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary), var(--secondary)); color: white; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 100; }
+        /* === 侧边栏 === */
+        .sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary), #8e7bf0); color: white; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 100; flex-shrink: 0; }
         .app-logo { font-size: 20px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .avatar { width: 36px; height: 36px; background: white; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .day-picker label { font-size: 12px; opacity: 0.8; display: block; margin-bottom: 5px; }
-        .day-picker select { width: 100%; padding: 8px; border-radius: 5px; border: none; font-weight: bold; margin-bottom: 20px; cursor: pointer; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: left; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.9); padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: left; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .nav-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .day-picker label { font-size:12px; opacity:0.8; }
+        .day-picker select { width: 100%; padding: 8px; border-radius: 5px; border: none; font-weight: bold; margin-bottom: 20px; cursor: pointer; color: var(--primary); }
 
-        /* 主内容 */
+        /* === 主内容区 === */
         .main-content { flex: 1; overflow-y: auto; padding: 20px; position: relative; -webkit-overflow-scrolling: touch; }
         .section { display: none; animation: fadeIn 0.3s; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Dashboard */
-        .dashboard-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 15px; }
-        th { background: #dfe4ea; padding: 10px; white-space: nowrap; }
-        td { border-bottom: 1px solid #eee; padding: 8px; text-align: center; }
-        .sig-input { border:none; border-bottom:1px solid #ccc; width:50px; text-align:center; color:var(--primary); font-family:monospace; }
-        .check-box { transform: scale(1.2); cursor: pointer; }
+        /* === Dashboard V2.1 === */
+        .dash-header-card { background: linear-gradient(135deg, #5a4fcf, #ac92ec); color: white; border-radius: 15px; padding: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3); margin-bottom: 20px; }
+        .stats-box { display: flex; gap: 30px; text-align: center; }
+        .stat-item .num { font-size: 32px; font-weight: 800; line-height: 1; }
+        .stat-item .label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
 
-        /* Study Room */
-        .study-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; min-height: 500px; display: flex; flex-direction: column; }
-        .study-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px; }
-        .passage-text { font-size: 18px; line-height: 1.8; color: #34495e; margin-bottom: 20px; white-space: pre-wrap; }
-        .vocab-hl { color: #d35400; font-weight: bold; background: #fff5e6; padding: 0 4px; border-radius: 4px; }
-        .translation-box { background: #f1f2f6; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); display: none; margin-top: 15px; color: #666; font-size: 16px; }
-        .study-container.show-trans .translation-box { display: block; }
-        .audio-controls { display: flex; gap: 15px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-        .btn { padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        .control-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .progress-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .progress-track { width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; margin-top:10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00b894, #00cec9); width: 0%; transition: width 0.5s ease; }
+
+        .table-container { background: white; border-radius: 12px; padding: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #f8f9fa; color: #636e72; font-size: 13px; padding: 15px 10px; text-align: center; border-bottom: 2px solid #eee; }
+        td { padding: 12px 8px; border-bottom: 1px solid #f1f1f1; text-align: center; vertical-align: middle; font-size: 14px; color: #2d3436; }
+        
+        .tag { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 4px; color: white; margin-bottom: 4px; }
+        .tag.pink { background: #e84393; } .tag.blue { background: #0984e3; } .tag.green { background: #00b894; } .tag.orange { background: #e17055; }
+        .review-tag { background: #00b894; color: white; font-size: 10px; padding: 2px 5px; border-radius: 4px; display: flex; align-items: center; gap: 5px; margin-bottom:2px; white-space: nowrap; }
+        .score-input { width: 40px; padding: 5px; text-align: center; border: 1px solid #dfe6e9; border-radius: 4px; }
+        .check-btn { width: 20px; height: 20px; cursor: pointer; accent-color: #5a4fcf; }
+
+        /* === Study & Game === */
+        .study-container, .game-area { background: white; border-radius: 20px; padding: 30px; margin-bottom: 20px; min-height: 400px; display: flex; flex-direction: column; }
+        .study-header { display: flex; justify-content: space-between; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px; margin-bottom: 20px; }
         .listen-item { background: #f8f9fa; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: auto; padding-top: 20px; }
-        .page-btn { background: white; border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
-        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* Game Center */
-        .game-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .game-btn { background: white; border: 1px solid #eee; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .vocab-hl { color: #d35400; font-weight: bold; background: #fff5e6; padding: 0 4px; border-radius: 4px; }
+        
+        .game-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .game-btn { background: white; border: 1px solid #eee; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
         .game-btn.active { background: var(--primary); color: white; }
-        .game-area { background: white; border-radius: 20px; padding: 30px; min-height: 450px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        /* Game Elements */
-        .flashcard-scene { perspective: 1000px; width: 320px; height: 220px; cursor: pointer; margin-bottom: 20px; }
-        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s; transform-style: preserve-3d; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        /* Flashcard */
+        .flashcard-scene { perspective: 1000px; width: 300px; height: 200px; cursor: pointer; margin: 0 auto 20px; }
+        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s; transform-style: preserve-3d; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .flashcard.flipped { transform: rotateY(180deg); }
-        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; border-radius: 20px; background: white; border: 1px solid #eee; }
-        .fc-front { color: var(--primary); } .fc-back { background: var(--primary); color: white; transform: rotateY(180deg); }
-        
-        .match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 700px; }
-        .match-card { background: #f8f9fa; padding: 5px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 600; height: 70px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; user-select: none; transition: 0.15s; font-size: 14px; }
+        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; background: white; border: 1px solid #eee; }
+        .fc-front { color: var(--primary); font-size: 32px; font-weight: 800; }
+        .fc-back { background: var(--primary); color: white; transform: rotateY(180deg); font-size: 28px; }
+        .pron { font-size: 14px; color: #888; margin-top: 5px; font-weight: normal; font-family: "Arial", sans-serif; }
+
+        /* Match Game */
+        .match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .match-card { background: #f8f9fa; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; font-weight: bold; border: 2px solid transparent; font-size: 14px; user-select: none; }
         .match-card.selected { border-color: var(--primary); background: #eeeaf9; color: var(--primary); transform: scale(1.05); }
-        .match-card.crush { opacity: 0; transform: scale(0); transition: 0.4s; pointer-events: none; }
-        .spell-input { width: 60%; padding: 12px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 12px; margin: 20px 0; outline: none; font-family: monospace; }
+        .match-card.shake { animation: shake 0.4s; border-color: red; background: #ffe0e0; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Spell Game */
+        .spell-input { font-size: 24px; padding: 10px; text-align: center; border: 2px solid #ddd; border-radius: 10px; width: 60%; font-family: monospace; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -75,141 +87,266 @@
 <div class="sidebar">
     <div class="app-logo"><div class="avatar">EC</div> Eric's Station</div>
     <div class="day-picker">
-        <label>Select Day:</label>
+        <label>快速跳转:</label>
         <select id="globalDaySelect" onchange="changeGlobalDay()"></select>
     </div>
-    <button class="nav-btn active" onclick="showSection('dashboard', this)">📊 指挥官</button>
+    <button class="nav-btn active" onclick="showSection('dashboard', this)">🛡️ 备考指挥官</button>
     <button class="nav-btn" onclick="showSection('study', this)">📖 核心训练</button>
     <button class="nav-btn" onclick="showSection('game', this)">🎮 竞技场</button>
 </div>
 
 <div class="main-content">
+
     <div id="dashboard" class="section active">
-        <div class="dashboard-card">
-            <h2 style="color:var(--primary); margin-top:0;">🛡️ KET 指挥官</h2>
-            <p>Score: <span id="totalPoints" style="font-weight:bold; color:#f0932b">0</span></p>
-            <div style="overflow-x:auto;"><table style="min-width:600px;"><thead><tr><th>Day</th><th>单词</th><th>听读</th><th>写/说</th><th>App</th><th>复习</th><th>得分</th><th>签字</th></tr></thead><tbody id="dashBody"></tbody></table></div>
+        <div class="dash-header-card">
+            <div class="header-title"><h2>🛡️ KET 备考指挥官 V2.1</h2><p>Target: Grade A | 每日闭环 · 契约精神</p></div>
+            <div class="stats-box">
+                <div class="stat-item"><div class="num" id="displayTotalScore">0</div><div class="label">总积分 (EXP)</div></div>
+                <div class="stat-item"><div class="num" id="displayStreak">0</div><div class="label">连续打卡 (DAYS)</div></div>
+            </div>
+        </div>
+        <div class="control-bar">
+            <div>📅 开始日期: <input type="date" id="startDateInput" onchange="updateStartDate()"></div>
+            <button onclick="if(confirm('重置所有数据？')) {localStorage.clear(); location.reload();}" style="background:#ff7675; color:white; border:none; padding:5px 10px; border-radius:5px;">⚠️ 重置</button>
+        </div>
+        <div class="progress-section">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; color:#555;">
+                <span>🎁 奖励进度条</span><span id="nextTargetText">下一目标: 300分</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressBar" style="width: 0%"></div></div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th style="width:60px;">Date<br>Day</th><th>📝 单词打卡</th><th>🎧 听读率</th><th>✍️ 写作</th><th>🗣️ 口语</th><th>📱 APPs</th><th>👨‍🏫 外教</th><th>🔄 遗忘复习</th><th>得分</th></tr>
+                </thead>
+                <tbody id="dashBody"></tbody>
+            </table>
         </div>
     </div>
 
     <div id="study" class="section">
         <div class="study-container">
-            <div class="study-header"><h2 style="margin:0; color:var(--primary);" id="studyTitle">Day X</h2><button onclick="toggleTrans()" style="background:#f0932b; color:white; border:none; padding:8px 15px; border-radius:15px; cursor:pointer;">👁️ 翻译</button></div>
-            <div id="studyContent"></div><div class="pagination" id="studyPagination"></div>
+            <div class="study-header"><h2 style="margin:0; color:#5a4fcf;" id="studyTitle">Day X</h2><button onclick="toggleTrans()" style="background:#fdcb6e; border:none; padding:5px 15px; border-radius:15px; color:white;">👁️ 翻译</button></div>
+            <div id="studyContent"></div>
+            <div style="margin-top:20px; text-align:center;" id="studyPagination"></div>
         </div>
     </div>
 
     <div id="game" class="section">
         <div class="game-nav">
             <button class="game-btn active" onclick="setGameMode('flashcard', this)">⚡ 闪卡</button>
-            <button class="game-btn" onclick="setGameMode('match', this)">🧩 连连看</button>
+            <button class="game-btn" onclick="setGameMode('match', this)">🧩 消消乐</button>
             <button class="game-btn" onclick="setGameMode('spell', this)">✍️ 拼写</button>
         </div>
-        <div class="game-area" id="gameBoard"></div>
+        <div class="game-area" id="gameBoard" style="align-items:center; justify-content:center;"></div>
     </div>
+
 </div>
 
-<script src="ket_data.js"></script>
 <script>
-    let currentDay = 1;
-    let currentData = null;
-    let gameState = { mode: 'flashcard', idx: 0, match: { selected: [], correct: 0, wrong: 0 } };
-
-    window.onload = function() {
-        const sel = document.getElementById('globalDaySelect');
-        for(let i=1; i<=14; i++) {
-            let opt = document.createElement('option'); opt.value = i; opt.innerText = `Day ${i}`; sel.appendChild(opt);
+    // ================== 核心数据 (Day 1 & Day 2 完整内容) ==================
+    const KET_DATA = {
+        1: {
+            theme: "People & Family",
+            vocab: [
+                {en: "aunt", cn: "阿姨/姑姑", pron: "/ɑːnt/"}, {en: "cousin", cn: "堂(表)兄弟", pron: "/ˈkʌzn/"}, 
+                {en: "grandchild", cn: "孙子/孙女", pron: "/ˈɡræn.tʃaɪld/"}, {en: "guest", cn: "客人", pron: "/ɡest/"}, 
+                {en: "husband", cn: "丈夫", pron: "/ˈhʌz.bənd/"}, {en: "neighbor", cn: "邻居", pron: "/ˈneɪ.bər/"}, 
+                {en: "surname", cn: "姓氏", pron: "/ˈsɜː.neɪm/"}, {en: "teenager", cn: "青少年", pron: "/ˈtiːnˌeɪ.dʒər/"}, 
+                {en: "wife", cn: "妻子", pron: "/waɪf/"}, {en: "colleague", cn: "同事", pron: "/ˈkɒl.iːɡ/"}, 
+                {en: "adult", cn: "成年人", pron: "/ˈæd.ʌlt/"}, {en: "member", cn: "成员", pron: "/ˈmem.bər/"}
+            ],
+            reading: [
+                { title: "Reading 1: The Family Party", content: `Hello, my name is Sam. Today is Saturday. We have a big party at my house. There are many <span class="vocab-hl">guests</span>. Look at the woman in the red dress. She is my <span class="vocab-hl">aunt</span>, Lisa. She is my dad's sister. The boy next to her is Mike. He is my <span class="vocab-hl">cousin</span>. Mike is 15 years old. He is a <span class="vocab-hl">teenager</span>.`, translation: "你好，我是萨姆。今天是周六，我家有个大派对。有很多客人。看那个穿红裙的女士，是我阿姨Lisa，爸爸的姐姐。旁边是Mike，我堂兄，15岁，是个青少年。" },
+                { title: "Reading 2: My Neighbors", content: `I live in a nice house. I have a very good <span class="vocab-hl">neighbor</span>. His name is Mr. White. So his <span class="vocab-hl">surname</span> is White. Mr. White lives with Mrs. White. She is his <span class="vocab-hl">wife</span>, and he is her <span class="vocab-hl">husband</span>. They are both <span class="vocab-hl">adults</span>. They like gardening.`, translation: "我住在一个漂亮的房子里。我有一个好邻居叫怀特先生。他和怀特太太住一起，她是他的妻子。他们都是成年人，喜欢园艺。" }
+            ],
+            listening: [
+                { title: "Listening Part 1", content: [
+                    {text: "1. He works with my dad. He is my dad's ___.", audioText: "This is Mr. Li. He works with my dad. He is my dad's colleague.", translation: "这是李先生，爸爸的同事。"},
+                    {text: "2. My name is Tom Brown. My ___ is Brown.", audioText: "My name is Tom Brown. My surname is Brown.", translation: "我叫Tom Brown，姓Brown。"},
+                    {text: "3. My grandma loves me. I am her happy ___.", audioText: "My grandma loves me very much. I am her happy grandchild.", translation: "奶奶很爱我，我是她快乐的孙子。"}
+                ]}
+            ]
+        },
+        2: {
+            theme: "School & Education",
+            vocab: [
+                {en: "subject", cn: "科目", pron: "/ˈsʌb.dʒekt/"}, {en: "board", cn: "黑板", pron: "/bɔːd/"}, 
+                {en: "break", cn: "休息/课间", pron: "/breɪk/"}, {en: "chemistry", cn: "化学", pron: "/ˈkem.ɪ.stri/"}, 
+                {en: "college", cn: "学院", pron: "/ˈkɒl.ɪdʒ/"}, {en: "course", cn: "课程", pron: "/kɔːs/"}, 
+                {en: "exam", cn: "考试", pron: "/ɪɡˈzæm/"}, {en: "geography", cn: "地理", pron: "/dʒiˈɒɡ.rə.fi/"}, 
+                {en: "history", cn: "历史", pron: "/ˈhɪs.tər.i/"}, {en: "project", cn: "项目", pron: "/ˈprɒdʒ.ekt/"}, 
+                {en: "ruler", cn: "尺子", pron: "/ˈruː.lər/"}, {en: "uniform", cn: "校服", pron: "/ˈjuː.nɪ.fɔːm/"}
+            ],
+            reading: [
+                { title: "Reading 1: My School Day", content: `I love my school. We study many <span class="vocab-hl">subjects</span>. My favorite subject is <span class="vocab-hl">history</span>. I don't like <span class="vocab-hl">chemistry</span> because it is difficult. We wear a blue <span class="vocab-hl">uniform</span> at school. In the classroom, the teacher writes on the <span class="vocab-hl">board</span>. We have a short <span class="vocab-hl">break</span> in the morning.`, translation: "我爱我的学校。我们学很多科目。我最爱历史，不喜欢化学因为太难。我们穿蓝色校服。老师在黑板上写字。早上我们有短暂休息。" },
+                { title: "Reading 2: The Big Exam", content: `Today we have a big <span class="vocab-hl">exam</span>. I need my pen and <span class="vocab-hl">ruler</span>. We are doing a <span class="vocab-hl">project</span> about world maps in <span class="vocab-hl">geography</span> class. After high school, I want to go to a good <span class="vocab-hl">college</span>.`, translation: "今天有大考。我需要笔和尺子。地理课我们在做世界地图项目。高中后我想去好大学。" }
+            ],
+            listening: [
+                { title: "Listening Part 1", content: [
+                    {text: "1. Don't forget your ___. You need to draw lines.", audioText: "Don't forget your ruler. You need to draw lines in the math exam.", translation: "别忘了尺子，你需要画线。"},
+                    {text: "2. I wear a white shirt. This is my school ___.", audioText: "I wear a white shirt and grey trousers. This is my school uniform.", translation: "我穿白衬衫，这是我的校服。"}
+                ]}
+            ]
         }
-        loadDayData(1);
-        genTable();
     };
 
+    // ================= 逻辑程序 =================
+    const CURVE = [1, 2, 4, 7, 15];
+    const LEVEL_GAP = 300;
+    let currentDay = 1;
+    let currentData = KET_DATA[1];
+    let gameState = { mode: 'flashcard', idx: 0, match: { selected: [], deck: [] } };
+
+    window.onload = function() {
+        // Init Date
+        let sd = localStorage.getItem('ket_start_date');
+        if(!sd) { sd = new Date().toISOString().split('T')[0]; localStorage.setItem('ket_start_date', sd); }
+        document.getElementById('startDateInput').value = sd;
+
+        // Init Select
+        const sel = document.getElementById('globalDaySelect');
+        for(let i=1; i<=14; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = `Day ${i}`; sel.appendChild(opt); }
+
+        loadDayData(1);
+        renderDashboard();
+    };
+
+    function updateStartDate() { localStorage.setItem('ket_start_date', document.getElementById('startDateInput').value); renderDashboard(); }
     function changeGlobalDay() { loadDayData(parseInt(document.getElementById('globalDaySelect').value)); }
 
     function loadDayData(day) {
         currentDay = day;
-        currentData = KET_DATA[day];
-        if(!currentData) { alert("Day " + day + " 暂无数据，加载 Day 1 演示。"); currentData = KET_DATA[1]; }
-        document.getElementById('studyTitle').innerText = `Day ${day}: ${currentData.theme}`;
+        currentData = KET_DATA[day] || { theme: "Review", vocab: [], reading: [], listening: [] };
+        document.getElementById('studyTitle').innerText = `Day ${day}: ${currentData.theme || 'Review'}`;
         if(document.getElementById('study').classList.contains('active')) renderStudyPage(0);
         if(document.getElementById('game').classList.contains('active')) renderGame();
     }
 
-    function showSection(id, btn) {
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(btn) { document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active')); btn.classList.add('active'); }
-        if(id === 'study') renderStudyPage(0);
-        if(id === 'game') renderGame();
-        window.speechSynthesis.cancel();
-    }
+    function renderDashboard() {
+        const tbody = document.getElementById('dashBody'); tbody.innerHTML = '';
+        let totalScore = 0; let streak = 0;
+        const startDate = new Date(localStorage.getItem('ket_start_date'));
 
-    function genTable() {
-        const tbody = document.getElementById('dashBody'); tbody.innerHTML = ''; let total = 0;
-        for(let i=1; i<=14; i++) {
-            let done = localStorage.getItem(`d${i}_done`); let score = done ? 10 : 0; total += score;
-            tbody.innerHTML += `<tr><td style="font-weight:bold;">Day ${i}</td><td><input type="checkbox" ${done?'checked':''} class="check-box" onchange="saveDash(${i}, this)"></td><td><input type="checkbox" class="check-box"></td><td><input type="number" class="sig-input"></td><td><input type="checkbox" class="check-box"></td><td>${i%3===0 ? '🔵' : '-'}</td><td style="color:var(--primary); font-weight:bold;">${score}</td><td><input type="text" class="sig-input"></td></tr>`;
-        }
-        document.getElementById('totalPoints').innerText = total;
-    }
-    function saveDash(day, el) { if(el.checked) localStorage.setItem(`d${day}_done`, 1); else localStorage.removeItem(`d${day}_done`); genTable(); }
+        for (let i = 1; i <= 14; i++) {
+            let rowDate = new Date(startDate); rowDate.setDate(startDate.getDate() + (i - 1));
+            let dateStr = `${(rowDate.getMonth()+1).toString().padStart(2,'0')}-${rowDate.getDate().toString().padStart(2,'0')}`;
+            let data = JSON.parse(localStorage.getItem(`day_${i}_data`) || '{}');
+            
+            let dayScore = 0;
+            if(data.vocab) dayScore += 10; if(data.apps) dayScore += 5; if(data.teacher) dayScore += 10;
+            if(data.reviews) Object.values(data.reviews).forEach(v => { if(v) dayScore += 15; });
+            if(dayScore > 0) streak++; totalScore += dayScore;
 
-    function renderStudyPage(pageIdx) {
-        const container = document.getElementById('studyContent'); const pagination = document.getElementById('studyPagination');
-        let pages = (currentData.reading || []).concat(currentData.listening ? [{ type: 'listening', title: 'Listening Practice', content: currentData.listening }] : []);
-        let p = pages[pageIdx]; let html = '';
+            let theme = KET_DATA[i] ? KET_DATA[i].theme.split(' ')[0] : 'Review';
+            let tagColor = ['pink', 'blue', 'green', 'orange'][i % 4];
 
-        if(p.type === 'listening') {
-            html += `<h3>${p.title}</h3>`;
-            p.content.forEach(item => { html += `<div class="listen-item"><div style="display:flex; justify-content:space-between; align-items:center;"><span>${item.text}</span><button onclick="speak('${item.audioText}')" style="background:var(--primary); color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;">🔊</button></div><div class="translation-box">[译] ${item.translation}</div></div>`; });
-        } else {
-            html += `<h3>${p.title}</h3><div class="passage-text" id="readText">${p.content}</div><div class="translation-box"><strong>[译]</strong><br>${p.translation}</div><div class="audio-controls"><button class="btn" style="background:var(--success); color:white" onclick="speak(document.getElementById('readText').innerText)">▶ 朗读</button><button class="btn" style="background:var(--danger); color:white" onclick="window.speechSynthesis.cancel()">■ 停止</button></div>`;
-        }
-        container.innerHTML = html;
-        let btnHtml = ''; pages.forEach((_, idx) => { btnHtml += `<button class="page-btn ${idx===pageIdx?'active':''}" onclick="renderStudyPage(${idx})">${idx+1}</button>`; });
-        pagination.innerHTML = btnHtml;
-    }
-
-    function toggleTrans() { const pwd = prompt("Password (777):"); if(pwd === "777") document.querySelector('.study-container').classList.toggle('show-trans'); }
-    function speak(txt) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'en-GB'; u.rate = 0.9; window.speechSynthesis.speak(u); }
-
-    function setGameMode(mode, btn) { gameState.mode = mode; gameState.idx = 0; document.querySelectorAll('.game-btn').forEach(el => el.classList.remove('active')); if(btn) btn.classList.add('active'); renderGame(); }
-    function renderGame() {
-        const board = document.getElementById('gameBoard'); board.innerHTML = ''; const vocab = currentData.vocab;
-        if(gameState.mode === 'flashcard') {
-            let w = vocab[gameState.idx];
-            board.innerHTML = `<div style="color:#888; margin-bottom:10px;">${gameState.idx+1} / ${vocab.length}</div><div class="flashcard-scene" onclick="this.querySelector('.flashcard').classList.toggle('flipped'); speak('${w.en}')"><div class="flashcard"><div class="fc-face fc-front">${w.en}</div><div class="fc-face fc-back">${w.cn}</div></div></div><div style="display:flex; gap:20px;"><button class="game-btn" onclick="if(gameState.idx>0){gameState.idx--; renderGame()}">Prev</button><button class="game-btn" onclick="if(gameState.idx<${vocab.length-1}){gameState.idx++; renderGame()}">Next</button></div>`;
-        } else if(gameState.mode === 'match') {
-            if(!gameState.matchInit || gameState.lastDay !== currentDay) {
-                let deck = []; let slice = vocab.length > 8 ? vocab.slice(0,8) : vocab;
-                slice.forEach((v,i)=> { deck.push({id:i, type:'en', t:v.en}); deck.push({id:i, type:'cn', t:v.cn}); });
-                deck.sort(()=>0.5-Math.random()); gameState.matchDeck = deck; gameState.match.selected = []; gameState.match.correct = 0; gameState.matchInit = true; gameState.lastDay = currentDay;
+            let reviewHtml = '';
+            for(let j=1; j<i; j++) {
+                if(CURVE.includes(i - j)) {
+                    reviewHtml += `<label class="review-tag"><span style="font-weight:bold">复习 D${j}</span><input type="checkbox" ${data.reviews && data.reviews[j]?'checked':''} onchange="updateReview(${i}, ${j}, this.checked)"></label>`;
+                }
             }
-            let html = `<div class="match-stats"><div class="stat-badge" style="color:green">✅: <span id="m_c">${gameState.match.correct}</span></div></div><div class="match-grid">`;
-            gameState.matchDeck.forEach((c, i) => { html += `<div class="match-card" id="card_${i}" onclick="handleMatch(${i}, '${c.type}', ${c.id}, '${c.t}')">${c.t}</div>`; });
-            html += `</div><button class="game-btn" style="margin-top:20px" onclick="gameState.matchInit=false; renderGame()">Restart</button>`;
-            board.innerHTML = html;
-        } else if(gameState.mode === 'spell') {
-            let w = vocab[gameState.idx];
-            board.innerHTML = `<h2 style="color:var(--primary); font-size:32px;">${w.cn}</h2><input id="spellIn" class="spell-input" placeholder="..." autocomplete="off"><div id="fb" style="height:20px; font-weight:bold; margin-bottom:10px;"></div><button class="game-btn" onclick="checkSpell('${w.en}')">Check</button>`;
-            setTimeout(() => { const inp = document.getElementById('spellIn'); if(inp) { inp.focus(); inp.onkeypress = (e) => { if(e.key === 'Enter') checkSpell(w.en); } } }, 100);
+
+            tbody.innerHTML += `<tr>
+                <td class="day-cell"><span class="day-date">${dateStr}</span><span class="day-num">D${i}</span></td>
+                <td style="text-align:left"><span class="tag ${tagColor}">${theme}</span><br><label style="cursor:pointer;font-size:12px;"><input type="checkbox" class="check-btn" ${data.vocab?'checked':''} onchange="updateData(${i}, 'vocab', this.checked)"> 打卡</label></td>
+                <td><input class="score-input" placeholder="%" value="${data.listen||''}" onchange="updateData(${i}, 'listen', this.value)"></td>
+                <td><input class="score-input" placeholder="-" value="${data.write||''}" onchange="updateData(${i}, 'write', this.value)"></td>
+                <td><input class="score-input" placeholder="-" value="${data.speak||''}" onchange="updateData(${i}, 'speak', this.value)"></td>
+                <td><input type="checkbox" class="check-btn" ${data.apps?'checked':''} onchange="updateData(${i}, 'apps', this.checked)"></td>
+                <td><input type="checkbox" class="check-btn" ${data.teacher?'checked':''} onchange="updateData(${i}, 'teacher', this.checked)"></td>
+                <td><div style="display:flex;flex-direction:column;gap:2px;">${reviewHtml}</div></td>
+                <td><span style="font-weight:bold;color:#5a4fcf;">${dayScore}</span></td>
+            </tr>`;
         }
+        document.getElementById('displayTotalScore').innerText = totalScore;
+        document.getElementById('displayStreak').innerText = streak;
+        let nextTarget = (Math.floor(totalScore / LEVEL_GAP) + 1) * LEVEL_GAP;
+        document.getElementById('progressBar').style.width = `${((totalScore % LEVEL_GAP) / LEVEL_GAP) * 100}%`;
+        document.getElementById('nextTargetText').innerText = `下一目标: ${nextTarget}分`;
     }
 
-    function handleMatch(idx, type, id, text) {
-        let el = document.getElementById(`card_${idx}`); if(el.style.opacity === '0' || el.classList.contains('selected')) return;
-        if(type === 'en') speak(text); el.classList.add('selected'); gameState.match.selected.push({idx, id, el});
+    function updateData(day, field, value) {
+        let data = JSON.parse(localStorage.getItem(`day_${day}_data`) || '{}');
+        data[field] = value; localStorage.setItem(`day_${day}_data`, JSON.stringify(data)); renderDashboard();
+    }
+    function updateReview(day, target, checked) {
+        let data = JSON.parse(localStorage.getItem(`day_${day}_data`) || '{}');
+        if(!data.reviews) data.reviews = {}; data.reviews[target] = checked;
+        localStorage.setItem(`day_${day}_data`, JSON.stringify(data)); renderDashboard();
+    }
+
+    function showSection(id, btn) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active')); document.getElementById(id).classList.add('active');
+        if(btn) { document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active')); btn.classList.add('active'); }
+        if(id==='study') renderStudyPage(0); if(id==='game') renderGame();
+    }
+
+    function renderStudyPage(idx) {
+        const c = document.getElementById('studyContent');
+        if(!currentData.reading) { c.innerHTML="暂无内容"; return; }
+        let pages = (currentData.reading||[]).concat(currentData.listening||[]);
+        if(pages.length===0) return;
+        let p = pages[idx];
+        
+        let contentHtml = '';
+        if(p.content && Array.isArray(p.content)) { // Listening list
+             contentHtml = p.content.map(i => `<div class="listen-item"><span>${i.text}</span><button onclick="speak('${i.audioText}')">🔊</button><div class="translation-box" style="display:none;color:#666;margin-top:5px;">${i.translation}</div></div>`).join('');
+        } else { // Reading text
+             contentHtml = `<div style="font-size:18px;line-height:1.8;">${p.content}</div><div class="translation-box" style="display:none;background:#eee;padding:10px;margin-top:10px;">${p.translation}</div>`;
+             if(p.content.length > 50) contentHtml += `<button onclick="speak(document.querySelector('#studyContent div').innerText)" style="margin-top:10px;background:#00b894;color:white;border:none;padding:5px 15px;border-radius:15px;">▶ 朗读</button>`;
+        }
+        c.innerHTML = `<h3>${p.title||'Practice'}</h3>${contentHtml}`;
+        
+        let pgHtml = ''; pages.forEach((_, i) => pgHtml += `<button onclick="renderStudyPage(${i})" style="margin:5px;padding:5px 10px;border:1px solid #ccc;background:${i===idx?'#5a4fcf':'white'};color:${i===idx?'white':'black'}">${i+1}</button>`);
+        document.getElementById('studyPagination').innerHTML = pgHtml;
+    }
+    function toggleTrans() { document.querySelectorAll('.translation-box').forEach(e => e.style.display = e.style.display==='none'?'block':'none'); }
+    function speak(txt) { window.speechSynthesis.cancel(); let u=new SpeechSynthesisUtterance(txt); u.lang='en-GB'; window.speechSynthesis.speak(u); }
+
+    function setGameMode(m, b) { gameState.mode = m; gameState.idx = 0; document.querySelectorAll('.game-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); renderGame(); }
+    function renderGame() {
+        const b = document.getElementById('gameBoard');
+        if(!currentData.vocab) { b.innerHTML="No Vocab"; return; }
+        let v = currentData.vocab;
+        
+        if(gameState.mode === 'flashcard') {
+            let w = v[gameState.idx];
+            b.innerHTML = `<div class="flashcard-scene" onclick="this.querySelector('.flashcard').classList.toggle('flipped');speak('${w.en}')">
+                <div class="flashcard"><div class="fc-face fc-front">${w.en}<div class="pron">${w.pron||''}</div></div><div class="fc-face fc-back">${w.cn}</div></div>
+            </div><button class="game-btn" onclick="gameState.idx=(gameState.idx+1)%${v.length};renderGame()">Next</button>`;
+        } 
+        else if(gameState.mode === 'match') {
+            if(!gameState.match.init || gameState.lastDay !== currentDay) {
+                let deck = []; v.slice(0,8).forEach((x,i)=>{deck.push({id:i,txt:x.en,type:'en'},{id:i,txt:x.cn,type:'cn'})});
+                deck.sort(()=>Math.random()-0.5); gameState.match.deck=deck; gameState.match.selected=[]; gameState.match.init=true; gameState.lastDay=currentDay;
+            }
+            let html = '<div class="match-grid">';
+            gameState.match.deck.forEach((c,i) => html+=`<div id="mc_${i}" class="match-card" onclick="handleMatch(${i},${c.id},'${c.txt}','${c.type}')">${c.txt}</div>`);
+            b.innerHTML = html + '</div><button onclick="gameState.match.init=false;renderGame()" style="margin-top:20px;">Restart</button>';
+        }
+        else if(gameState.mode === 'spell') {
+            let w = v[gameState.idx];
+            b.innerHTML = `<h2>${w.cn}</h2><input id="spi" class="spell-input" autocomplete="off"><br><button class="game-btn" style="margin-top:20px" onclick="checkSpell('${w.en}')">Check</button>`;
+        }
+    }
+    function handleMatch(idx, id, txt, type) {
+        let el = document.getElementById(`mc_${idx}`);
+        if(el.style.opacity==='0' || el.classList.contains('selected')) return;
+        if(type==='en') speak(txt); el.classList.add('selected'); gameState.match.selected.push({idx,id,el});
         if(gameState.match.selected.length === 2) {
-            let [c1, c2] = gameState.match.selected;
-            if(c1.id === c2.id && c1.idx !== c2.idx) { setTimeout(()=>{ c1.el.style.opacity=0; c2.el.style.opacity=0; }, 300); gameState.match.correct++; document.getElementById('m_c').innerText = gameState.match.correct; } 
-            else { c1.el.classList.add('shake'); c2.el.classList.add('shake'); setTimeout(()=>{ c1.el.classList.remove('selected','shake'); c2.el.classList.remove('selected','shake'); }, 500); }
-            gameState.match.selected = [];
+            let [c1,c2] = gameState.match.selected;
+            if(c1.id===c2.id && c1.idx!==c2.idx) { setTimeout(()=>{c1.el.style.opacity=0;c2.el.style.opacity=0;},300); }
+            else { setTimeout(()=>{c1.el.classList.remove('selected');c2.el.classList.remove('selected');},500); }
+            gameState.match.selected=[];
         }
     }
     function checkSpell(ans) {
-        let val = document.getElementById('spellIn').value.trim();
-        if(val.toLowerCase() === ans.toLowerCase()) { document.getElementById('fb').innerHTML = "<span style='color:green'>Correct!</span>"; speak(ans); setTimeout(()=>{ if(gameState.idx < currentData.vocab.length-1) { gameState.idx++; renderGame(); } else alert("All words cleared!"); }, 1000); } 
-        else { document.getElementById('fb').innerHTML = "<span style='color:red'>Try again</span>"; document.getElementById('spellIn').value = ""; document.getElementById('spellIn').focus(); }
+        let val = document.getElementById('spi').value.trim().toLowerCase();
+        if(val===ans.toLowerCase()) { speak(ans); alert('Correct!'); gameState.idx=(gameState.idx+1)%currentData.vocab.length; renderGame(); }
+        else { alert('Try again'); }
     }
 </script>
 </body>
